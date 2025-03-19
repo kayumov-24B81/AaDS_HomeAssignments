@@ -4,7 +4,7 @@ TESTPROJECT = $(PROJECT)-test
 
 LIBPROJECT = $(PROJECT).a
 
-OBJECTS = 
+OBJECTS = encoder.o
 
 TEST-OBJECTS = ascii-test.o
 
