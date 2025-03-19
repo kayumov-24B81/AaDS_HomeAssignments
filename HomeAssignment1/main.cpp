@@ -1,13 +1,42 @@
 #include "encoder.hpp"
-#include <iostream>
 
-int main()
+int main(int argc, char* argv[])
 {
-    const unsigned DATA_SIZE = 20;
-    std :: vector<unsigned char> data(DATA_SIZE);
+    bool encodingMode = true;
+    if(argc > 1)
+    {
+        std :: string arg(argv[1]);
+        if(arg == "-d")
+        {
+            encodingMode = false;
+        }
+        else if(arg != "-e")
+        {
+            std :: cerr << "Use adcii85 wthi -d or -e flags" << std :: endl;
+            return 1;
+        }
+    }
+
     Encoder encoder;
-    std::cin.read(reinterpret_cast<char*>(data.data()), DATA_SIZE);
-    std :: string encoded_data = encoder.encode(data);
-    std :: cout << encoded_data << std :: endl;
-    return 0;
+    
+    if(encodingMode)
+    {
+        std :: cout << "Write your text(Ctrl + D for end of text):" << std :: endl;
+        std :: string encoded;
+    
+        try
+        {
+            encoded = encoder.encode();
+        }
+    
+        catch (const std::exception& e) 
+        {
+            std :: cerr << "Ошибка: " << e.what() << std :: endl;
+            return 1;
+        }
+    
+        std :: cout << std :: endl << encoded << std :: endl;
+    
+        return 0;
+    }
 }
