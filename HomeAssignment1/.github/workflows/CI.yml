@@ -1,0 +1,57 @@
+
+name: "Builg & Test"
+
+on:
+  push:
+    branches:
+      - "*"
+  pull_request:
+    branches:
+      - "*"
+
+jobs:
+  build_n_test:
+    name: Configuration, build and test
+    
+    strategy:
+      matrix:
+        os:
+          - ubuntu-24.04
+        python_version:
+          - 3.12
+        gcc_version:
+          - 12
+
+    runs-on:  "${{ matrix.os }}"
+    
+    steps:
+      - name: Installing make and other instruments
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential libgtest-dev libgmock-dev
+
+      - name: Installing python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "${{ matrix.python_version }}"
+
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Write enviroment
+        run: |
+          echo GITHUB_ENV: $GITHUB_ENV
+          echo '=================== Содержимое GITHUB_ENV ====================='
+          cat $CGITHUB_ENV
+          echo '==================== Окружение в итоге ========================'
+          source $GITHUB_ENV
+          env
+
+      - name: Build program and test
+        run: |
+          make
+          make test
+
+      - name: Run test
+        run: |
+          ./ascii85-test
