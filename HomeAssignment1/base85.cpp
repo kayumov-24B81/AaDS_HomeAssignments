@@ -1,100 +1,71 @@
 #include "base85.hpp"
 
-Base85 :: Base85(): bufferSize(1024)
+Base85 :: Base85()
 {
     ALPHABET = R"(!"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz)";
 }
 
-std :: string Base85 :: encodeSection(std :: vector<unsigned char>& data)
+std :: string Base85 :: encodeData(std :: vector<unsigned char>& data)
 {
-    if (data.empty()) 
+    if(data.size() != 4)
     {
-        return "";
+        throw std::invalid_argument("Invalid buffer size!");
+    }
+    
+    unsigned num = 0;
+    for (unsigned i = 0; i < 4; ++i) 
+    {
+        num = (num << 8) | data[i];
     }
 
-    std::string encodedText;
-
-    for (unsigned i = 0; i < data.size(); i += 4) 
+    unsigned char values[5];
+    for (int i = 4; i >= 0; --i) 
     {
-        unsigned num = 0;
-        unsigned bytes_in_group = 0;
-
-        for (unsigned j = 0; j < 4; ++j) 
-        {
-            unsigned char byte = (i + j < data.size()) ? data[i + j] : 0;
-            num = (num << 8) | byte;
-            
-            if (i + j < data.size()) 
-            {
-                ++bytes_in_group;
-            }
-        }
-
-        if (num == 0 && bytes_in_group == 4) 
-        {
-            encoded_text += 'z';
-            continue;
-        }
-
-        unsigned char values[5];
-        
-        for (int j = 4; j >= 0; --j) 
-        {
-            values[j] = num % 85;
-            num /= 85;
-        }
-
-        if (bytes_in_group == 4) 
-        {
-            for (unsigned j = 0; j < 5; ++j)
-            {
-                encoded_text += ALPHABET[values[j]];
-            }
-        } 
-        else 
-        {
-            for (unsigned j = 0; j < bytes_in_group + 1; ++j)
-            {
-                encoded_text += ALPHABET[values[j]];
-            }
-        }
+        values[i] = num % 85;
+        num /= 85;
     }
 
-    return encoded_text;
+    std::string encodedData;
+    for (int i = 0; i < 5; ++i) 
+    {
+        encodedData += ALPHABET[values[i]];
+    }
+
+    return encodedData;
 }
 
-std :: string Base85 :: encode()
+std :: string Base85 :: encodeStream()
 {
-    std :: vector<unsigned char> buffer(bufferSize);
-    std :: vector<unsigned char> text;
+    std :: vector<unsigned char> buffer;
+    std :: string encodedStream;
+    char c;
 
-    while(true)
+    while (std::cin.get(c))
     {
-        std :: cin.read(reinterpret_cast<char*>(buffer.data()), bufferSize);
-        std :: streamsize bytesRead = std :: cin.gcount();
-        
-        if(bytesRead > 0)
+        buffer.push_back(static_cast<unsigned char>(c));
+
+        if(buffer.size() == 4) 
         {
-            text.insert(text.end(), buffer.begin(), buffer.begin() + bytesRead);
-        }
-        
-        if(std :: cin.eof())
-        {
-            break;
-        }
-        
-        if(!std :: cin)
-        {
-            throw std::invalid_argument("Data reading error!");
+             std::string encodedBuffer = encodeData(buffer);
+             encodedStream += encodedBuffer;
+             buffer.clear();
         }
     }
     
-    std :: string encoded = encodeSection(text);
+    if(!buffer.empty())
+    {
+        while(buffer.size() < 4)
+        {
+            buffer.push_back(0);
+        }
+        std :: string encodedBuffer = encodeData(buffer);
+        encodedStream += encodedBuffer;;
+    }
     
-    return encoded;
+    return encodedStream;
 }
             
-std :: vector<unsigned char> Base85 :: decodeSection(std :: string code)
+std :: vector<unsigned char> Base85 :: decodeData(std :: string data)
 {
     int charToValue[256];
     for(unsigned i = 0; i < 256; ++i)
@@ -106,24 +77,17 @@ std :: vector<unsigned char> Base85 :: decodeSection(std :: string code)
     {
         charToValue[static_cast<unsigned char>(ALPHABET[i])] = i;
     }
-    
-    std::string cleaned;
-    for (char c : code) {
-        if (!isspace(c)) {
-            cleaned += c;
-        }
-    }
-    
-    if(cleaned.size() % 5 != 0)
+
+    if(data.size() % 5 != 0)
     {
         throw std::invalid_argument("Incorrect input data length (must be divisible by 5)");
     }
     
-    std :: vector<unsigned char> text;
+    std :: vector<unsigned char> decodedData;
     
-    for(unsigned i = 0; i < cleaned.size(); i += 5)
+    for(unsigned i = 0; i < data.size(); i += 5)
     {
-        std :: string group = cleaned.substr(i, 5);
+        std :: string group = data.substr(i, 5);
         
         unsigned values[5];
         for(unsigned j = 0; j < 5; ++j)
@@ -138,20 +102,44 @@ std :: vector<unsigned char> Base85 :: decodeSection(std :: string code)
         
         unsigned num = (values[0] * std :: pow(85, 4)) + (values[1] * pow(85, 3)) + (values[2] * pow(85, 2)) + (values[3] * 85) + values[4];
         
-        text.push_back((num >> 24) & 0xFF);
-        text.push_back((num >> 16) & 0xFF);
-        text.push_back((num >> 8) & 0xFF);
-        text.push_back(num & 0xFF);
+        decodedData.push_back((num >> 24) & 0xFF);
+        decodedData.push_back((num >> 16) & 0xFF);
+        decodedData.push_back((num >> 8) & 0xFF);
+        decodedData.push_back(num & 0xFF);
     }
     
-    return text;
+    return decodedData;
 }
         
-std :: vector<unsigned char> Base85 :: decode()
+std :: vector<unsigned char> Base85 :: decodeStream()
 {
-    std::string encoded_data((std::istreambuf_iterator<char>(std::cin)), std::istreambuf_iterator<char>());
-    std::vector<unsigned char> decoded_data = decodeSection(encoded_data);
-    return decoded_data;
+    std :: string buffer;
+    std :: vector<unsigned char> decodedStream;
+    char c;
+    
+    while(std::cin.get(c))
+    {
+        if(isspace(c))
+        {
+            continue;
+        }
+        
+        buffer += c;
+        
+        if(buffer.size() == 5)
+        {
+            std :: vector<unsigned char> decodedBuffer = decodeData(buffer);
+            decodedStream.insert(decodedStream.end(), decodedBuffer.begin(), decodedBuffer.end());
+            buffer.clear();
+        }   
+    }
+
+    if(!buffer.empty())
+    {
+        throw std::invalid_argument("Incorrect input data length (must be divisible by 5)");
+    }
+    
+    return decodedStream;
 }
             
     

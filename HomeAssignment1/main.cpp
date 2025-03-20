@@ -12,7 +12,7 @@ int main(int argc, char* argv[])
         }
         else if(arg != "-e")
         {
-            std :: cerr << "Use adcii85 wthi -d or -e flags" << std :: endl;
+            std :: cerr << "Use ascii85 wthi -d or -e flags" << std :: endl;
             return 1;
         }
     }
@@ -21,12 +21,11 @@ int main(int argc, char* argv[])
     
     if(encodingMode)
     {
-        std :: cout << "Write your text(Ctrl + D for end of text):" << std :: endl;
+        std :: cout << "Write text you need to encode(Ctrl + D for end of text):" << std :: endl;
         std :: string encoded;
-    
         try
         {
-            encoded = coder.encode();
+            encoded = coder.encodeStream();
         }
     
         catch (const std::exception& e) 
@@ -42,29 +41,28 @@ int main(int argc, char* argv[])
     }
     else
     {
-        std :: cout << "Write your text(Ctrl + D for end of text):" << std :: endl;
+        std :: cout << "Write text you need to decode(Ctrl + D for end of text):" << std :: endl;
         std :: vector<unsigned char> decoded;
     
         try
         {
-            decoded = coder.decode();
+            decoded = coder.decodeStream();
         }
     
         catch (const std::exception& e) 
         {
             std :: cout << std :: endl;
-            std :: cerr << "Ошибка: " << e.what() << std :: endl;
+            std :: cerr << "Error: " << e.what() << std :: endl;
             return 1;
         }
-        
-        
+
         std :: cout << std :: endl;
+        
         for(unsigned char byte : decoded)
         {
             std :: cout << byte;
         }
-        std :: cout << std :: endl;
-    
+        
         return 0;
     } 
 }
