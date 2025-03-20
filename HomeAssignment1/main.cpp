@@ -1,4 +1,4 @@
-#include "encoder.hpp"
+#include "base85.hpp"
 
 int main(int argc, char* argv[])
 {
@@ -17,7 +17,7 @@ int main(int argc, char* argv[])
         }
     }
 
-    Encoder encoder;
+    Base85 coder;
     
     if(encodingMode)
     {
@@ -26,12 +26,13 @@ int main(int argc, char* argv[])
     
         try
         {
-            encoded = encoder.encode();
+            encoded = coder.encode();
         }
     
         catch (const std::exception& e) 
         {
-            std :: cerr << "Ошибка: " << e.what() << std :: endl;
+            std :: cout << std :: endl;
+            std :: cerr << "Error: " << e.what() << std :: endl;
             return 1;
         }
     
@@ -39,4 +40,31 @@ int main(int argc, char* argv[])
     
         return 0;
     }
+    else
+    {
+        std :: cout << "Write your text(Ctrl + D for end of text):" << std :: endl;
+        std :: vector<unsigned char> decoded;
+    
+        try
+        {
+            decoded = coder.decode();
+        }
+    
+        catch (const std::exception& e) 
+        {
+            std :: cout << std :: endl;
+            std :: cerr << "Ошибка: " << e.what() << std :: endl;
+            return 1;
+        }
+        
+        
+        std :: cout << std :: endl;
+        for(unsigned char byte : decoded)
+        {
+            std :: cout << byte;
+        }
+        std :: cout << std :: endl;
+    
+        return 0;
+    } 
 }
