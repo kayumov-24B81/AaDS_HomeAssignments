@@ -12,7 +12,9 @@ make test
 ## Clear
 make clean - clear main function files
 make cleanall - clear all files
-## Run
-./ascii85
+## Run encode
+./ascii85 or ./ascii85 -e
+## Run decode
+./ascii85 -d
 ## Run test
 ./ascii85-test
