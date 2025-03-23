@@ -4,10 +4,10 @@ name: "Builg & Test"
 on:
   push:
     branches:
-      - "*"
+      - '**'
   pull_request:
     branches:
-      - "*"
+      - '**'
 
 jobs:
   build_n_test:
