@@ -12,20 +12,19 @@ int main(int argc, char* argv[])
         }
         else if(arg != "-e")
         {
-            std :: cerr << "Use ascii85 wthi -d or -e flags" << std :: endl;
+            std :: cerr << "Use ascii85 with -d or -e flags" << std :: endl;
             return 1;
         }
     }
-
-    Base85 coder;
     
     if(encodingMode)
     {
+        Encoder encoder;
         std :: cout << "Write text you need to encode(Ctrl + D for end of text):" << std :: endl;
         std :: string encoded;
         try
         {
-            encoded = coder.encodeStream();
+            encoded = encoder.encodeStream();
         }
     
         catch (const std::exception& e) 
@@ -41,12 +40,13 @@ int main(int argc, char* argv[])
     }
     else
     {
+        Decoder decoder;
         std :: cout << "Write text you need to decode(Ctrl + D for end of text):" << std :: endl;
         std :: vector<unsigned char> decoded;
     
         try
         {
-            decoded = coder.decodeStream();
+            decoded = decoder.decodeStream();
         }
     
         catch (const std::exception& e) 
@@ -62,6 +62,8 @@ int main(int argc, char* argv[])
         {
             std :: cout << byte;
         }
+        
+        std :: cout << std :: endl;
         
         return 0;
     } 

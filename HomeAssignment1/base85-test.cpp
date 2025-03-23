@@ -3,7 +3,7 @@
 
 TEST(Base85MockTest, EncodeFromMockStreamGradual) 
 {
-    Base85 encoder;
+    Encoder encoder;
     MockInputStream mockStream;
 
     EXPECT_CALL(mockStream, readDataPiece())
