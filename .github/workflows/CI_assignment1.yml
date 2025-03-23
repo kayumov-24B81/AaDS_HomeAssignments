@@ -3,11 +3,11 @@ name: "Build & Test"
 
 on:
   push:
-    branches:
-      - '**'
+    paths:
+      - "HomeAssignment1/**"
   pull_request:
-    branches:
-      - '**'
+    paths:
+      - "HomeAssignment1/**"
 
 jobs:
   build_n_test:
