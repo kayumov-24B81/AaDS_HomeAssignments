@@ -49,9 +49,11 @@ jobs:
 
       - name: Build program and test
         run: |
+          cd HomeAssignment1
           make
           make test
 
       - name: Run test
         run: |
+          cd HomeAssignment1
           ./ascii85-test
