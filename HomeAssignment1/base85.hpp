@@ -20,7 +20,7 @@ class Encoder
         void handlePadding();
         void addAndCheckBuffer(char c);
         std :: string encodeStream();
-        std :: string encodeData(std :: vector<char> data);
+        std :: string encodeData(std :: string data);
         std :: string encodeFromInterface(InputStreamInterface& input);
 };
 

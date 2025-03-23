@@ -77,7 +77,7 @@ std :: string Encoder :: encodeStream()
     return encodedData;
 }
 
-std :: string Encoder :: encodeData(std :: vector<char> data)
+std :: string Encoder :: encodeData(std :: string data)
 {
     encodedData.clear();
     for(char c : data)
@@ -211,6 +211,7 @@ std :: vector<unsigned char> Decoder :: decodeStream()
 std :: vector<unsigned char> Decoder :: decodeFromInterface(InputStreamInterface& input)
 {
     decodedData.clear();
+    initializeCharToValue();
     while(!input.isEndOfStream())
     {
         std :: string piece = input.readDataPiece();
@@ -218,7 +219,6 @@ std :: vector<unsigned char> Decoder :: decodeFromInterface(InputStreamInterface
         {
             break;
         }
-        
         for(char c : piece)
         {
             if(isspace(c))
