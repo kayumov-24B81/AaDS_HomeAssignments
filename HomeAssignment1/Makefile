@@ -4,9 +4,15 @@ TESTPROJECT = $(PROJECT)-test
 
 LIBPROJECT = $(PROJECT).a
 
+GTESTPATH = -I/usr/src/googletest/googletest/include
+
+GMOCKPATH = -I/usr/src/googletest/googlemock/include
+
+TESTLIBPATH = -L/usr/src/googletest/build/lib
+
 OBJECTS = base85.o
 
-TEST-OBJECTS = ascii-test.o
+TEST-OBJECTS = base85-test.o
 
 DEPS = (wildcard *.h)
 
@@ -16,11 +22,11 @@ AFLAGS = rsv
 
 CXX = g++
 
-CXXFLAGS = -I. -std=c++17 -Werror -Wpedantic -Wall -g -fPIC
+CXXFLAGS = -I. -std=c++17 -Werror -Wpedantic -Wall -g -fPIC $(GTESTPATH) $(GMOCKPATH)
 
 LDXXFLAGS = $(CXXFLAGS) -L. -l:$(LIBPROJECT)
 
-LDGTESTFLAGS = $(LDXXFLAGS) -lgtest_main -lgtest -lpthread
+LDGTESTFLAGS = $(LDXXFLAGS) $(TESTLIBPATH) -lgtest_main -lgtest -lgmock -lpthread
 
 .PHONY: default
 

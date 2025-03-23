@@ -1,4 +1,4 @@
-#include "base85.hpp"
+#include "base85-test.hpp"
 
 Base85 :: Base85()
 {
@@ -15,7 +15,14 @@ std :: string Base85 :: encodeData(std :: vector<unsigned char>& data)
     unsigned num = 0;
     for (unsigned i = 0; i < 4; ++i) 
     {
-        num = (num << 8) | data[i];
+        if(i < 4)
+        {
+            num = (num << 8) | data[i];
+        }
+        else
+        {
+            num <<= 8;
+        }
     }
 
     unsigned char values[5];
@@ -54,16 +61,58 @@ std :: string Base85 :: encodeStream()
     
     if(!buffer.empty())
     {
+        unsigned padding = 4 - buffer.size();
         while(buffer.size() < 4)
         {
             buffer.push_back(0);
         }
         std :: string encodedBuffer = encodeData(buffer);
-        encodedStream += encodedBuffer;;
+        encodedStream += encodedBuffer.substr(0, 5 - padding);
     }
     
     return encodedStream;
 }
+
+std :: string Base85 ::  encodeFromInterface(InputStreamInterface& input)
+{
+    std :: vector<unsigned char> buffer;
+    std :: string encodedData;
+
+    while (!input.isEndOfStream())
+    {
+        std :: string piece = input.readDataPiece();
+        if(piece.empty())
+        {
+            break;
+        }
+        
+        for(char c : piece)
+        {
+            buffer.push_back(static_cast<unsigned char>(c));
+            
+            if(buffer.size() == 4) 
+            {
+                std::string encodedBuffer = encodeData(buffer);
+                encodedData += encodedBuffer;
+                buffer.clear();
+            }
+        }
+    }
+    
+    if(!buffer.empty())
+    {
+        unsigned padding = 4 - buffer.size();
+        while(buffer.size() < 4)
+        {
+            buffer.push_back(0);
+        }
+        std :: string encodedBuffer = encodeData(buffer);
+        encodedData += encodedBuffer.substr(0, 5 - padding);
+    }
+    
+    return encodedData;
+}
+    
             
 std :: vector<unsigned char> Base85 :: decodeData(std :: string data)
 {
@@ -142,7 +191,44 @@ std :: vector<unsigned char> Base85 :: decodeStream()
     return decodedStream;
 }
             
+std :: vector<unsigned char> Base85 :: decodeFromInterface(InputStreamInterface& input)
+{
+    std :: string buffer;
+    std :: vector<unsigned char> decodedData;
     
+    while(!input.isEndOfStream())
+    {
+        std :: string piece = input.readDataPiece();
+        if(piece.empty())
+        {
+            break;
+        }
+        
+        for(char c : piece)
+        {
+            if(isspace(c))
+            {
+                continue;
+            }
+        
+            buffer += c;
+        
+            if(buffer.size() == 5)
+            {
+                std :: vector<unsigned char> decodedBuffer = decodeData(buffer);
+                decodedData.insert(decodedData.end(), decodedBuffer.begin(), decodedBuffer.end());
+                buffer.clear();
+            }   
+        }
+    }
+
+    if(!buffer.empty())
+    {
+        throw std::invalid_argument("Incorrect input data length (must be divisible by 5)");
+    }
+    
+    return decodedData;
+}
         
             
             

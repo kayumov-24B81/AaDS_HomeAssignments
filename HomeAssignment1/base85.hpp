@@ -6,6 +6,8 @@
 #include <stdexcept>
 #include <cmath>
 
+class InputStreamInterface;
+
 class Base85
 {
     private:
@@ -14,8 +16,10 @@ class Base85
         Base85();
         std :: string encodeData(std :: vector<unsigned char>& data);
         std :: string encodeStream();
+        std :: string encodeFromInterface(InputStreamInterface& input);
         std :: vector<unsigned char> decodeData(std :: string data);
         std :: vector<unsigned char> decodeStream();
+        std :: vector<unsigned char> decodeFromInterface(InputStreamInterface& input);
 };
 
 
