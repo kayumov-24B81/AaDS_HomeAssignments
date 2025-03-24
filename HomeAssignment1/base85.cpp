@@ -6,12 +6,7 @@ Encoder :: Encoder()
 }
 
 std :: string Encoder :: encodeBuffer()
-{
-    if(buffer.size() != 4)
-    {
-        throw std::invalid_argument("Invalid buffer size!");
-    }
-    
+{    
     unsigned num = 0;
     for (unsigned i = 0; i < 4; ++i) 
     {
@@ -128,10 +123,6 @@ void Decoder :: initializeCharToValue()
 
 std :: vector<unsigned char> Decoder :: decodeBuffer()
 {
-    if(buffer.size() == 0)
-    {
-        throw std::invalid_argument("Incorrect input data length (must be divisible by 5)");
-    }
     std :: vector<unsigned char> decodedBuffer;
     for(unsigned i = 0; i < buffer.size(); i += 5)
     {

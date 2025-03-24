@@ -22,7 +22,7 @@ TEST(EncoderMockTest, EncodeFromMockStreamGradual)
     EXPECT_EQ(encoded, "87cURDZ");
 }
 
-TEST(EncoderMockTest, EncoderOutputTest)
+TEST(EncoderTest, EncoderOutputTest)
 {
     Encoder encoder;
     std::ostringstream mockedOstream;
@@ -63,7 +63,7 @@ TEST(DecoderMockTest, DecodeFromMockStreamGradual)
     EXPECT_EQ(word, "Helloiamgood");
 }
 
-TEST(DecoderMockTest, DecoderOutputTest)
+TEST(DecoderTest, DecoderOutputTest)
 {
     Decoder decoder;
     std::ostringstream mockedOstream;
@@ -81,6 +81,32 @@ TEST(DecoderMockTest, DecoderOutputTest)
     std::cout.rdbuf(coutBuf);
 
     EXPECT_EQ(mockedOstream.str(), "Helloiamgood\n");
+}
+
+TEST(DecoderTest, DecoderThrowLengthErrorTest)
+{
+    try
+    {
+        Decoder decoder;
+        EXPECT_THROW(decoder.decodeData("87cU"), std::invalid_argument);
+    }
+    catch (const std::exception& e) 
+    {
+        EXPECT_EQ(e.what(), "Incorrect input data length (must be divisible by 5)");
+    }
+}
+
+TEST(DecoderTest, DecoderThrowSymbolErrorTest)
+{
+    try
+    {
+        Decoder decoder;
+        EXPECT_THROW(decoder.decodeData("87cU~"), std::invalid_argument);
+    }
+    catch (const std::exception& e) 
+    {
+        EXPECT_EQ(e.what(), "Invalid character in text");
+    }
 }
 
 int main()
