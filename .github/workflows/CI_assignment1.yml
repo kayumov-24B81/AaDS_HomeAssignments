@@ -47,13 +47,19 @@ jobs:
           source $GITHUB_ENV
           env
 
-      - name: Build program and test
+      - name: Build program, test and python test
         run: |
           cd HomeAssignment1
           make
           make test
+          make pytest
 
       - name: Run test
         run: |
           cd HomeAssignment1
           ./ascii85-test
+      
+      - name: Run pytest
+        run: |
+          cd HomeAssignment1
+          ./ascii85-pytest
