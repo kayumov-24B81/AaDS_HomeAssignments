@@ -1,5 +1,6 @@
 import base64
 import os
+import random
 
 def generateData(size):
     return os.urandom(size)
@@ -15,7 +16,7 @@ def saveToFile(data, fileName):
         file.write(data)
 
 if __name__ == "__main__":
-    dataSize = 100
+    dataSize = random.randint(0, 100)
     data = generateData(dataSize)
     encodedData = encodeData(data)
     saveToFile(encodedData, "encoded.txt")

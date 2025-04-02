@@ -2,6 +2,8 @@ PROJECT = ascii85
 
 TESTPROJECT = $(PROJECT)-test
 
+PYTESTPROJECT = $(PROJECT)-pytest
+
 LIBPROJECT = $(PROJECT).a
 
 GTESTPATH = -I/usr/src/googletest/googletest/include
@@ -13,6 +15,8 @@ TESTLIBPATH = -L/usr/src/googletest/build/lib
 OBJECTS = base85.o
 
 TEST-OBJECTS = base85-test.o
+
+PYTEST-OBJECTS = base85-pytest.o
 
 DEPS = (wildcard *.h)
 
@@ -44,7 +48,13 @@ $(PROJECT): main.o $(LIBPROJECT)
 $(TESTPROJECT): $(LIBPROJECT) $(TEST-OBJECTS) 
 	$(CXX) -o $@ $(TEST-OBJECTS) $(LDGTESTFLAGS)
 	
+$(PYTESTPROJECT): $(LIBPROJECT) $(PYTEST-OBJECTS) 
+	$(CXX) -o $@ $(PYTEST-OBJECTS) $(LDGTESTFLAGS)
+	
 test: $(TESTPROJECT)
+
+pytest: $(PYTESTPROJECT)
+	python3 testing_files.py
 
 all: $(PROJECT)
 
@@ -57,3 +67,5 @@ cleanall: clean
 	rm -f $(PROJECT)
 	rm -f $(LIBPROJECT)
 	rm -f $(TESTPROJECT)
+	rm -f $(PYTESTPROJECT)
+	rm -f *.txt
