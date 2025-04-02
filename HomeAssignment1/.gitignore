@@ -1,3 +1,5 @@
 *.o
 *.a
 ascii85
+*.txt
+
