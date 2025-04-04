@@ -9,6 +9,8 @@ Home Assignment 1 - ascii85 encoder and decoder.
 make
 # Build test
 make test
+# Buld python test
+make pytest
 ## Clear
 make clean - clear main function files
 make cleanall - clear all files
@@ -18,3 +20,5 @@ make cleanall - clear all files
 ./ascii85 -d
 ## Run test
 ./ascii85-test
+## Run python test
+./ascii85-pytest
