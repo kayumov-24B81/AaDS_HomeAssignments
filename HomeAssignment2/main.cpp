@@ -1,8 +1,8 @@
 #include "linear.hpp"
 
-
 int main()
 {
-    foo();
-    return 0;
+    std :: vector<std :: vector<float>> data;
+    readFile(data);
+    std :: cout << createMatrix(data) << std :: endl;
 }
