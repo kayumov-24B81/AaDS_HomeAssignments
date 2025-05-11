@@ -2,11 +2,21 @@ PROJECT = ascii85
 
 TESTPROJECT = $(PROJECT)-test
 
+PYTESTPROJECT = $(PROJECT)-pytest
+
 LIBPROJECT = $(PROJECT).a
 
-OBJECTS = 
+GTESTPATH = -I/usr/src/googletest/googletest/include
 
-TEST-OBJECTS = ascii-test.o
+GMOCKPATH = -I/usr/src/googletest/googlemock/include
+
+TESTLIBPATH = -L/usr/src/googletest/build/lib
+
+OBJECTS = base85.o
+
+TEST-OBJECTS = base85-test.o
+
+PYTEST-OBJECTS = base85-pytest.o
 
 DEPS = (wildcard *.h)
 
@@ -16,11 +26,11 @@ AFLAGS = rsv
 
 CXX = g++
 
-CXXFLAGS = -I. -std=c++17 -Werror -Wpedantic -Wall -g -fPIC
+CXXFLAGS = -I. -std=c++17 -Werror -Wpedantic -Wall -g -fPIC $(GTESTPATH) $(GMOCKPATH)
 
 LDXXFLAGS = $(CXXFLAGS) -L. -l:$(LIBPROJECT)
 
-LDGTESTFLAGS = $(LDXXFLAGS) -lgtest_main -lgtest -lpthread
+LDGTESTFLAGS = $(LDXXFLAGS) $(TESTLIBPATH) -lgtest_main -lgtest -lgmock -lpthread
 
 .PHONY: default
 
@@ -38,7 +48,13 @@ $(PROJECT): main.o $(LIBPROJECT)
 $(TESTPROJECT): $(LIBPROJECT) $(TEST-OBJECTS) 
 	$(CXX) -o $@ $(TEST-OBJECTS) $(LDGTESTFLAGS)
 	
+$(PYTESTPROJECT): $(LIBPROJECT) $(PYTEST-OBJECTS) 
+	$(CXX) -o $@ $(PYTEST-OBJECTS) $(LDGTESTFLAGS)
+	
 test: $(TESTPROJECT)
+
+pytest: $(PYTESTPROJECT)
+	python3 testing_files.py
 
 all: $(PROJECT)
 
@@ -51,3 +67,5 @@ cleanall: clean
 	rm -f $(PROJECT)
 	rm -f $(LIBPROJECT)
 	rm -f $(TESTPROJECT)
+	rm -f $(PYTESTPROJECT)
+	rm -f *.txt
