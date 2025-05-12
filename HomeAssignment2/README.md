@@ -13,6 +13,6 @@ make test
 make clean - clear main function files
 make cleanall - clear all files
 ### Run 
-./linear
+./linear [.csv file name] - to solve equations from given .csv file (matrix.csv by default)
 ### Run test
 ./linear-test

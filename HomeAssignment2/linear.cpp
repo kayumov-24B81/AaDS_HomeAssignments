@@ -51,6 +51,12 @@ void Linear :: fillMatrices()
 
 void Linear :: solveEquations()
 {
+    if(matrix.rows() != matrix.cols())
+    {
+        throw std :: runtime_error("Matrix is not square");
+        return;
+    }
+    
     int n = matrix.rows();
     
     for(int i = 0; i < n; ++i)
