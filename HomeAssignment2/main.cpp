@@ -2,18 +2,11 @@
 
 int main()
 {
-    std :: vector<std :: vector<double>> data;
-    readFile(data);
+    Linear linear;
     
-    unsigned rows = data.size();
-    unsigned columns = data[0].size() - 1;
-    Eigen :: MatrixXd matrix(rows, columns);
-    Eigen :: VectorXd vector(rows);
-  
-    createMatrix(data, matrix, vector);
+    linear.readFile("matrix.csv");
+    linear.fillMatrices();
+    linear.solveEquations();
     
-    std :: cout << "matrix\n" << matrix << std :: endl;
-    std :: cout << "vector\n" << vector << std :: endl;
-    
-    solveMatrix(matrix, vector);
+    std :: cout << linear.getAnswer() << std :: endl;
 }

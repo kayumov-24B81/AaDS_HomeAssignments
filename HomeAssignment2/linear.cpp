@@ -5,13 +5,17 @@ int foo()
     return 0;
 }
 
-// .csv file reading
-void readFile(std :: vector<std :: vector<double>> &data)
+Eigen :: VectorXd Linear :: getAnswer()
+{
+    return answer;
+}
+
+void Linear :: readFile(std :: string file_name)
 {
     std :: ifstream file;
     std :: string line;
     
-    file.open("matrix.csv");
+    file.open(file_name);
     while(std :: getline(file, line))
     {
         std :: stringstream line_stream(line);
@@ -30,11 +34,11 @@ void readFile(std :: vector<std :: vector<double>> &data)
     }
 }
 
-// matrix creation
-void createMatrix(std :: vector<std :: vector<double>> &data, 
-                  Eigen :: MatrixXd &matrix,
-                  Eigen :: VectorXd &vector)
+void Linear :: fillMatrices()
 {
+    matrix.resize(data.size(), data[0].size() - 1);
+    vector.resize(data.size());
+    
     for(unsigned i = 0; i < data.size(); ++i)
     {
         for(unsigned j = 0; j < data[0].size() - 1; ++j)
@@ -45,8 +49,7 @@ void createMatrix(std :: vector<std :: vector<double>> &data,
     }
 }
 
-// solve matrix
-void solveMatrix(Eigen :: MatrixXd &matrix, Eigen :: VectorXd &vector)
+void Linear :: solveEquations()
 {
     int n = matrix.rows();
     
@@ -65,7 +68,7 @@ void solveMatrix(Eigen :: MatrixXd &matrix, Eigen :: VectorXd &vector)
         
         if(abs(matrix(i, i)) < 1e-12)
         {
-            std :: cerr << ("Singular matrix. No solutions") << std :: endl;
+            throw std :: runtime_error("Singular matrix. No solutions");
             return;
         }
         
@@ -78,9 +81,8 @@ void solveMatrix(Eigen :: MatrixXd &matrix, Eigen :: VectorXd &vector)
         }
     }
      
-    std :: cout << matrix.triangularView<Eigen :: Upper>().solve(vector) << std :: endl;
+    answer = matrix.triangularView<Eigen :: Upper>().solve(vector);
 }
-   
         
     
     
