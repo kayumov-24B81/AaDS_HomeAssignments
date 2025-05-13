@@ -1,8 +1,17 @@
 #include "linear.hpp"
 
-int foo()
+std :: vector<std :: vector<double>> Linear :: getData()
 {
-    return 0;
+    return data;
+}
+
+Eigen :: MatrixXd Linear :: getMatrix()
+{
+    return matrix;
+}
+Eigen :: VectorXd Linear :: getVector()
+{
+    return vector;
 }
 
 Eigen :: VectorXd Linear :: getAnswer()
@@ -24,7 +33,7 @@ void Linear :: readFile(std :: string file_name)
         
         while(std :: getline(line_stream, cell, ','))
         {
-            row.push_back(std :: stof(cell));
+            row.push_back(std :: stod(cell));
         }
         
         if(!row.empty())
@@ -90,5 +99,20 @@ void Linear :: solveEquations()
     answer = matrix.triangularView<Eigen :: Upper>().solve(vector);
 }
         
+void Linear :: writeAnswer()
+{
+    std :: ofstream file;
+    file.open("answer.csv");
     
-    
+    if(file.is_open())
+    {
+        Eigen :: IOFormat answer_format(Eigen::StreamPrecision, Eigen::DontAlignCols, ",", ",");
+        file << answer.format(answer_format);
+        file.close();
+    }
+    else
+    {
+        throw std :: runtime_error("Unable to write answer to csv file");
+        return;
+    }
+}
