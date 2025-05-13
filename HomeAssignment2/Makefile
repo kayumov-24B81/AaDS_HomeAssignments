@@ -1,4 +1,3 @@
-#Don't forget to add gmock later
 PROJECT = linear
 
 TESTPROJECT = $(PROJECT)-test
@@ -56,3 +55,5 @@ cleanall: clean
 	rm -f $(LIBPROJECT)
 	rm -f $(TESTPROJECT)
 	rm -f $(PYTESTPROJECT)
+	rm -f answer.csv
+	rm -f test.csv

@@ -1,0 +1,52 @@
+name: "Build & Test"
+
+on:
+  push:
+    paths:
+      - "HomeAssignment2/**"
+  pull_request:
+    paths:
+      - "HomeAssignment2/**"
+
+jobs:
+  build_n_test:
+    name: Configuration, build and test
+    
+    strategy:
+      matrix:
+        os:
+          - ubuntu-latest
+        gcc_version:
+          - 12
+
+    runs-on:  "${{ matrix.os }}"
+    
+    steps:
+      - name: Installing make and other instruments
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential libgtest-dev libgmock-dev
+          sudo apt install libeigen3-dev
+
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Write enviroment
+        run: |
+          echo GITHUB_ENV: $GITHUB_ENV
+          echo '=================== Содержимое GITHUB_ENV ====================='
+          cat $GITHUB_ENV
+          echo '==================== Окружение в итоге ========================'
+          source $GITHUB_ENV
+          env
+
+      - name: Build program and test
+        run: |
+          cd HomeAssignment2
+          make
+          make test
+
+      - name: Run test
+        run: |
+          cd HomeAssignment2
+          ./linear-test

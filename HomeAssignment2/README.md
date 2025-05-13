@@ -10,9 +10,9 @@ make
 ### Build test
 make test
 ### Clear
-make clean - clear main function files
+make clean - clear main function files <br>
 make cleanall - clear all files
 ### Run 
-./linear
+./linear [.csv file name] - to solve equations from given .csv file (matrix.csv by default)
 ### Run test
 ./linear-test

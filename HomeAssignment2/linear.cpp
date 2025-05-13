@@ -1,6 +1,118 @@
 #include "linear.hpp"
 
-int foo()
+std :: vector<std :: vector<double>> Linear :: getData()
 {
-    return 0;
+    return data;
+}
+
+Eigen :: MatrixXd Linear :: getMatrix()
+{
+    return matrix;
+}
+Eigen :: VectorXd Linear :: getVector()
+{
+    return vector;
+}
+
+Eigen :: VectorXd Linear :: getAnswer()
+{
+    return answer;
+}
+
+void Linear :: readFile(std :: string file_name)
+{
+    std :: ifstream file;
+    std :: string line;
+    
+    file.open(file_name);
+    while(std :: getline(file, line))
+    {
+        std :: stringstream line_stream(line);
+        std :: vector<double> row;
+        std :: string cell;
+        
+        while(std :: getline(line_stream, cell, ','))
+        {
+            row.push_back(std :: stod(cell));
+        }
+        
+        if(!row.empty())
+        {
+            data.push_back(row);
+        }
+    }
+}
+
+void Linear :: fillMatrices()
+{
+    matrix.resize(data.size(), data[0].size() - 1);
+    vector.resize(data.size());
+    
+    for(unsigned i = 0; i < data.size(); ++i)
+    {
+        for(unsigned j = 0; j < data[0].size() - 1; ++j)
+        {
+            matrix(i, j) = data[i][j];
+        }
+        vector(i) = data[i][data[0].size() - 1];
+    }
+}
+
+void Linear :: solveEquations()
+{
+    if(matrix.rows() != matrix.cols())
+    {
+        throw std :: runtime_error("Matrix is not square");
+        return;
+    }
+    
+    int n = matrix.rows();
+    
+    for(int i = 0; i < n; ++i)
+    {
+        int max_row = i;
+        for(int j = i + 1; j < n; ++j)
+        {
+            if(abs(matrix(j, i)) > abs(matrix(max_row, i)))
+            {
+                max_row = j;
+            }
+        }
+        matrix.row(i).swap(matrix.row(max_row));
+        std::swap(vector(i), vector(max_row));
+        
+        if(abs(matrix(i, i)) < 1e-12)
+        {
+            throw std :: runtime_error("Singular matrix. No solutions");
+            return;
+        }
+        
+        
+        for(int j = i + 1; j < n; ++j)
+        {
+            double factor = matrix(j, i) / matrix(i, i);
+            matrix.row(j) -= factor * matrix.row(i);
+            vector(j) -= factor * vector(i);
+        }
+    }
+     
+    answer = matrix.triangularView<Eigen :: Upper>().solve(vector);
+}
+        
+void Linear :: writeAnswer()
+{
+    std :: ofstream file;
+    file.open("answer.csv");
+    
+    if(file.is_open())
+    {
+        Eigen :: IOFormat answer_format(Eigen::StreamPrecision, Eigen::DontAlignCols, ",", ",");
+        file << answer.format(answer_format);
+        file.close();
+    }
+    else
+    {
+        throw std :: runtime_error("Unable to write answer to csv file");
+        return;
+    }
 }
